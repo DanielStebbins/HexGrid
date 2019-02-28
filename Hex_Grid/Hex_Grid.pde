@@ -59,31 +59,32 @@ void mouseMoved()
   mouseHex.g -= 145;
   
   List<Hexagon> adjacent = new ArrayList<Hexagon>();
+  adjacent.add(mouseHex);
   
-  if(listY + 1 < background.get(0).size())
+  /*
+   *           ***
+  ***          ***
+  ***           *
+  odd          even
+  */
+  
+  for(int x = -1; x < 2; x++)
   {
-    adjacent.add(background.get(listX).get(listY + 1));
+    for(int y = -1; y < 2; y++)
+    {
+      if(listX + x >= 0 && listX + x < background.size() && listY + y >= 0 && listY + y < background.get(0).size())
+      {
+        adjacent.add(background.get(listX + X).get(listY + Y));
+      }
+    }
   }
-  if(listY - 1 >= 0)
+  
+  if(listX % 2 == 0)
   {
-    adjacent.add(background.get(listX).get(listY - 1));
+    if(listX + 1 < background.size() && listY + 1 < background.get(0).size())
+      adjacent.remove(background.get(listX + 1).get(listY + 1));
   }
-  if(listX + 1 < background.size() && listY + 1 < background.get(0).size())
-  {
-    adjacent.add(background.get(listX + 1).get(listY + 1));
-  }
-  if(listX + 1 < background.size() && listY - 1 >= 0)
-  {
-    adjacent.add(background.get(listX + 1).get(listY - 1));
-  }
-  if(listX - 1 >= 0 && listY + 1 < background.get(0).size())
-  {
-    adjacent.add(background.get(listX - 1).get(listY + 1));
-  }
-  if(listX - 1 >= 0 && listY - 1 >= 0)
-  {
-    adjacent.add(background.get(listX - 1).get(listY - 1));
-  }
+  
   
   mouseHex = nearestHex(adjacent, mouseX, mouseY);
   mouseHex.g += 145;
