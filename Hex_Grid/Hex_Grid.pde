@@ -26,7 +26,7 @@ void setup()
   }
   
   //Move values... 3=2, 4=3, 7=4, 11~=5
-  test = new Entity(0, 0, 20, 4, 255, 0, 0, 11);
+  test = new Entity(0, 0, 20, 4, 255, 0, 0, 7);
   mouseHex = background.get(0);
   mouseHex.g += 150;
   test.move(background.get(0));
