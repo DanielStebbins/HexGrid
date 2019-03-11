@@ -182,7 +182,7 @@ void mouseMoved()
   }
   */
   //X constant is -650 and Y constant is -475 when cameraZ = (height / 2) / tan(PI / 6) (822.76).
-  mouseHex = nearestHex((int) (mouseX + cameraX - 650), (int) (mouseY + cameraY - 475));
+  mouseHex = nearestHex((int) (mouseX + (cameraX / 822.76) - width/2), (int) (mouseY + (cameraY / 822.76) - height/2));
   mouseHex.g += 145;
 }
 
