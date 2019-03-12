@@ -48,6 +48,7 @@ void draw()
   
   if(isShifting)
   {
+    print("called");
     move = cameraZ / 40;
   }
  
@@ -56,7 +57,7 @@ void draw()
     cameraX += move;
     moveCursor();
   }
-  else if(moveX < 0 && move > 1000)
+  else if(moveX < 0 && cameraX + move > 1000)
   {
     cameraX -= move;
     moveCursor();
@@ -102,7 +103,7 @@ void mouseWheel(MouseEvent event)
     zoom = e * cameraZ / 20;
   }
   
-  if(zoom < 4500 && zoom > 500)
+  if(cameraZ + zoom < 4500 && cameraZ + zoom > 500)
   {
     cameraZ += zoom;
   }
