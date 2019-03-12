@@ -8,6 +8,7 @@ Hexagon mouseHex;
 int listX = 0, listY = 0;
 float cameraX = 2650, cameraY = 2300, cameraZ = 0;
 int moveX = 0, moveY = 0;
+boolean isShifting = false;
 Entity selected;
 
 void setup()
@@ -43,24 +44,31 @@ void setup()
 void draw()
 {
   background(20, 98, 224);
-  if(moveX > 0 && cameraX + cameraZ / 90 < 4500)
+  float move = cameraZ / 90;
+  
+  if(isShifting)
   {
-    cameraX += cameraZ / 90;
+    move = cameraZ / 40;
+  }
+ 
+  if(moveX > 0 && cameraX + move < 4500)
+  {
+    cameraX += move;
     moveCursor();
   }
-  else if(moveX < 0 && cameraX + cameraZ / 90 > 1000)
+  else if(moveX < 0 && move > 1000)
   {
-    cameraX -= cameraZ / 90;
+    cameraX -= move;
     moveCursor();
   }
-  if(moveY > 0 && cameraY + cameraZ / 90 < 4000)
+  if(moveY > 0 && cameraY + move < 4000)
   {
-    cameraY += cameraZ / 90;
+    cameraY += move;
     moveCursor();
   }
-  else if(moveY < 0 && cameraY + cameraZ / 90 > 500)
+  else if(moveY < 0 && cameraY + move > 500)
   {
-    cameraY -= cameraZ / 90;
+    cameraY -= move;
     moveCursor();
   }
   camera(cameraX, cameraY, cameraZ, cameraX, cameraY, 0, 0, 1, 0);
@@ -83,10 +91,20 @@ void draw()
 void mouseWheel(MouseEvent event)
 {
   float e = event.getCount();
+  float zoom = 0;
   
-  if(cameraZ + e * cameraZ / 20 < 4500 && cameraZ + e * cameraZ / 20 > 500)
+  if(isShifting)
   {
-    cameraZ += e * cameraZ / 20;
+    zoom = e * cameraZ / 10;
+  }
+  else
+  {
+    zoom = e * cameraZ / 20;
+  }
+  
+  if(zoom < 4500 && zoom > 500)
+  {
+    cameraZ += zoom;
   }
 
   moveCursor();
@@ -95,7 +113,7 @@ void mouseWheel(MouseEvent event)
 void moveCursor()
 {
   mouseHex.g -= 145;
-  mouseHex = nearestHex((int) (cameraX + (mouseX * cameraZ / 822.76) - (width/2 * cameraZ / 822.76)), (int) (cameraY + (mouseY * cameraZ / 822.76) - (height/2 * cameraZ / 822.76)));
+  mouseHex = nearestHex((int) (cameraX + (mouseX - width / 2) * cameraZ / 822.76), (int) (cameraY + (mouseY - height / 2) * cameraZ / 822.76));
   mouseHex.g += 145;
 }
 
@@ -121,6 +139,10 @@ void keyPressed()
   {
     moveX = 1;
   }
+  else if(key == CODED && keyCode == SHIFT)
+  {
+    isShifting = true;
+  }
 }
 
 void keyReleased()
@@ -144,6 +166,10 @@ void keyReleased()
   else if(key == 100)
   {
     moveX = 0;
+  }
+  else if(key == CODED && keyCode == SHIFT)
+  {
+    isShifting = false;
   }
 }
 
@@ -174,7 +200,7 @@ void mouseMoved()
     }
   }
 
-  if(listX % 2 == 0)
+  if(listX + 1 % 2 == 0)
   {
     if(listX + 1 < background.size() && listY + 1 < background.get(0).size())
     {
