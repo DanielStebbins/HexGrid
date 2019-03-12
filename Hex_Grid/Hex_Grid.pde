@@ -2,10 +2,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 List<ArrayList<Hexagon>> background = new ArrayList<ArrayList<Hexagon>>();
+List<Hexagon> movable = new ArrayList<Hexagon>();
 Entity test;
 Hexagon mouseHex;
 int listX = 0, listY = 0;
-float cameraX = 2650, cameraY = 3050, cameraZ = 0;
+float cameraX = 2650, cameraY = 2300, cameraZ = 0;
 int moveX = 0, moveY = 0;
 Entity selected;
 
@@ -13,13 +14,13 @@ void setup()
 {
   size(1300, 950, P3D);
   //(height / 2) / tan(PI / 6)
-  cameraZ = 1500;
+  cameraZ = (height / 2) / tan(PI / 6);
   
   for(int x = 1; x < 100; x++)
   {
     background.add(new ArrayList<Hexagon>());
 
-    for(int y = 1; y < 100; y++)
+    for(int y = 1; y < 75; y++)
     {
       int temp = 60 * y;
 
@@ -36,27 +37,31 @@ void setup()
   test = new Entity(0, 0, 20, 4, 255, 0, 0, 7);
   mouseHex = nearestHex(mouseX, mouseY);
   mouseHex.g += 150;
-  test.move(background.get(50).get(50));
+  test.move(background.get(50).get(38));
 }
 
 void draw()
 {
   background(20, 98, 224);
-  if(moveX > 0)
+  if(moveX > 0 && cameraX + cameraZ / 90 < 4500)
   {
-    cameraX += 10;
+    cameraX += cameraZ / 90;
+    moveCursor();
   }
-  else if(moveX < 0)
+  else if(moveX < 0 && cameraX + cameraZ / 90 > 1000)
   {
-    cameraX -= 10;
+    cameraX -= cameraZ / 90;
+    moveCursor();
   }
-  if(moveY > 0)
+  if(moveY > 0 && cameraY + cameraZ / 90 < 4000)
   {
-    cameraY += 10;
+    cameraY += cameraZ / 90;
+    moveCursor();
   }
-  else if(moveY < 0)
+  else if(moveY < 0 && cameraY + cameraZ / 90 > 500)
   {
-    cameraY -= 10;
+    cameraY -= cameraZ / 90;
+    moveCursor();
   }
   camera(cameraX, cameraY, cameraZ, cameraX, cameraY, 0, 0, 1, 0);
 
@@ -78,7 +83,20 @@ void draw()
 void mouseWheel(MouseEvent event)
 {
   float e = event.getCount();
-  cameraZ += 30 * e;
+  
+  if(cameraZ + e * cameraZ / 20 < 4500 && cameraZ + e * cameraZ / 20 > 500)
+  {
+    cameraZ += e * cameraZ / 20;
+  }
+
+  moveCursor();
+}
+
+void moveCursor()
+{
+  mouseHex.g -= 145;
+  mouseHex = nearestHex((int) (cameraX + (mouseX * cameraZ / 822.76) - (width/2 * cameraZ / 822.76)), (int) (cameraY + (mouseY * cameraZ / 822.76) - (height/2 * cameraZ / 822.76)));
+  mouseHex.g += 145;
 }
 
 void keyPressed()
@@ -131,8 +149,6 @@ void keyReleased()
 
 void mouseMoved()
 {
-  mouseHex.g -= 145;
-
   /*
   List<Hexagon> adjacent = new ArrayList<Hexagon>();
   adjacent.add(mouseHex);
@@ -182,42 +198,51 @@ void mouseMoved()
   }
   */
   //X constant is -650 and Y constant is -475 when cameraZ = (height / 2) / tan(PI / 6) (822.76).
-  mouseHex = nearestHex((int) (mouseX + (cameraX / 822.76) - width/2), (int) (mouseY + (cameraY / 822.76) - height/2));
-  mouseHex.g += 145;
+  moveCursor();
 }
 
 void mouseClicked()
 {
-  if(selected == null)
+  if(mouseButton == LEFT)
   {
-    selected = mouseHex.occupant;
-
-    if(selected != null)
+    if(selected == null)
     {
-      selected.r += 100;
-      selected.g += 100;
-      selected.b += 100;
-
-      moveShade(145);
-    }
-  }
-  else
-  {
-    if(selected == mouseHex.occupant)
-    {
-      selected.r -= 100;
-      selected.g -= 100;
-      selected.b -= 100;
-      moveShade(-145);
-      selected = null;
+      selected = mouseHex.occupant;
+  
+      if(selected != null)
+      {
+        selected.r += 100;
+        selected.g += 100;
+        selected.b += 100;
+  
+        moveShade(145);
+      }
     }
     else
     {
-      moveShade(-145);
-      selected.position.occupant = null;
-      selected.move(mouseHex);
-      moveShade(145);
+      if(selected == mouseHex.occupant)
+      {
+        selected.r -= 100;
+        selected.g -= 100;
+        selected.b -= 100;
+        moveShade(-145);
+        selected = null;
+      }
+      else if(distance(selected.x, selected.y, mouseHex.x, mouseHex.y) < 9010 * selected.moveRange)
+      {
+        moveShade(-145);
+        selected.position.occupant = null;
+        selected.move(mouseHex);
+        moveShade(145);
+      }
     }
+  }
+  else if(mouseButton == CENTER && selected != null)
+  {
+     moveShade(-145);
+     selected.position.occupant = null;
+     selected.move(mouseHex);
+     moveShade(145);
   }
 }
 
