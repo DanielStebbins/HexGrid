@@ -1,6 +1,16 @@
 import java.util.ArrayList;
 import java.util.List;
 
+int xOffset = 0;
+int yOffset = 0;
+PImage[] images = new PImage[5];
+color col = color(216);
+ /*X,Y coords and height and witdth and string for file*/
+Box boxes[] = new Box[5];
+boolean dragging = false;
+int state;
+ArrayList<Box> shownItems = new ArrayList<Box>();
+
 List<ArrayList<Hexagon>> background = new ArrayList<ArrayList<Hexagon>>();
 List<Hexagon> movable = new ArrayList<Hexagon>();
 Entity test;
@@ -13,6 +23,22 @@ Entity selected;
 
 void setup()
 {
+  frameRate(60);
+  //rendering images, needs to be 1 more than boxes loop, factors in the menu itself
+  
+  for(int i = 0; i < images.length; i++)
+  {
+   images[i] = loadImage("image" + i + ".png"); 
+  }
+  
+  //this is going to be the "dropdown" selection
+  for(int i = 0; i < boxes.length; i++)
+  {
+   boxes[i] = new Box(0,i*100,100,100,images[i]);
+  }
+  state = 0;
+  
+  
   size(1300, 950, P3D);
   //(height / 2) / tan(PI / 6)
   cameraZ = (height / 2) / tan(PI / 6);
@@ -43,6 +69,38 @@ void setup()
 
 void draw()
 {
+  background(col);
+  
+  //ensures that all the placed items are set up
+  for(Box b: shownItems)
+    {
+      if(b.getImage() == null)
+       b.displayBox();
+       else
+       b.setDrawings();
+    }
+  
+  //looks for displaying just the botton or everything
+  switch(state)
+  {
+    case 0:
+    {
+      boxes[0].setDrawings();
+      break; 
+    }
+    case 1:
+    {
+      for(Box b : boxes)
+      {
+      if(b.getImage() == null)
+       b.displayBox();
+       else
+       b.setDrawings();
+      }
+     break; 
+    }
+  }
+    
   background(20, 98, 224);
   float move = cameraZ / 90;
   
@@ -230,6 +288,42 @@ void mouseMoved()
 
 void mouseClicked()
 {
+  switch(state)
+  {
+    case 0:
+    {
+      for(int i = 0; i < shownItems.size(); i++)
+      {
+        //sets up the trash can and deselects objects
+        shownItems.get(i).setIsDragged(false);
+        if(shownItems.get(i).getX() < boxes[0].getWidth()/4 && shownItems.get(i).getY() < boxes[0].getHeight()/4)
+          {
+            shownItems.remove(i);
+            i--;
+          }
+      }
+      break;
+    }
+    case 1:
+    {
+      for(int i = 1; i < boxes.length; i++)
+      {
+       if(boxes[i].isWithin())
+       {
+         boxes[i].setColor(0);
+         /*X,Y coords and height and witdth and string for file*/
+         //places the prototype images onto the board
+         shownItems.add(new Box(boxes[i].getX(), boxes[i].getY(), boxes[i].getWidth(), boxes[i].getHeight(), boxes[i].getImage()));
+         boxes[i].setX(0);
+         boxes[i].setY(i*boxes[i].getWidth());
+         state = 0;
+       }
+       boxes[i].setIsDragged(false);
+      }
+      break;
+    }   
+  }
+  
   if(mouseButton == LEFT)
   {
     if(selected == null)
@@ -336,4 +430,46 @@ public void moveShade(int colorShift)
       }
     }
   }
+}
+
+void mouseDragged()
+{
+  switch(state)
+  {
+    case 0:
+    {
+      //pulls with accouting for offset
+      for(int i = 0; i < shownItems.size(); i++)
+      {
+       if(shownItems.get(i).getIsDragged())
+       {
+         shownItems.get(i).setX(mouseX-xOffset);
+         shownItems.get(i).setY(mouseY-yOffset);
+       }
+     }
+      break;
+    }
+    case 1:
+    {
+      //same as shownItems
+      for(int i = 0; i < boxes.length; i++)
+      {
+       if(boxes[i].getIsDragged())
+       {
+         boxes[i].setX(mouseX-xOffset);
+         boxes[i].setY(mouseY-yOffset);
+       }
+      }
+      break;
+    }
+  }
+}
+
+boolean escapePressed() 
+{
+  if (keyCode == ESC) 
+  {
+    return true;
+  } 
+  return false;
 }
