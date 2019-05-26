@@ -1,3 +1,4 @@
+//Stores the movement range, color, and current hexagon occupied.
 public class Entity extends Polygon
 {
   int moveRange;
@@ -8,6 +9,7 @@ public class Entity extends Polygon
     this.moveRange = moveRange;
   }
   
+  //Sets a new position and current hexagon when the entity moves.
   public void move(Hexagon mouseHex)
   {
      x = mouseHex.x;

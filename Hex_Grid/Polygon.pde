@@ -1,3 +1,4 @@
+//Base clas which stores color, position, and number of sides for entities and hexes.
 public class Polygon
 {
   int x, y, radius, sides, r, g, b;
@@ -13,6 +14,7 @@ public class Polygon
     this.b = b;
   }
 
+  //Draws the polygon as a shape defined by several radii.
   public void display()
   {
     fill(r, g, b);
@@ -28,7 +30,7 @@ public class Polygon
     endShape(CLOSE);
   }
   
-  //Bad equals I know.
+  //tests whether a polygon shares a center with another polygon.
   public boolean equals(Object other)
   {
     Polygon temp = (Polygon) other;

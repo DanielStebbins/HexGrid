@@ -1,3 +1,4 @@
+//Stores the positions (pixel and list), color, and current entity occupant.
 public class Hexagon extends Polygon
 {
   int listPositionX, listPositionY;

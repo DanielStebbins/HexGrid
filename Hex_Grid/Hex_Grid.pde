@@ -1,22 +1,38 @@
+/*
+Daniel Stebbins
+This is my own work, D.S.
+This project displays a grid made of hexagons and allows the user to move entities by clicking on them.
+*/
+
 import java.util.ArrayList;
 import java.util.List;
 
+//Stores all hexagons.
 List<ArrayList<Hexagon>> background = new ArrayList<ArrayList<Hexagon>>();
+
+//Stores the hexagons the selected entity can move to.
 List<Hexagon> movable = new ArrayList<Hexagon>();
-Entity test;
+Entity test1, test2;
+Entity selected;
+
+//Stores the hexagon the mouse is in and the list position of that hexagon.
 Hexagon mouseHex;
 int listX = 0, listY = 0;
+
+//Stores camera position.
 float cameraX = 2650, cameraY = 2300, cameraZ = 0;
+
+//Stores whether the user is panning up, down, left, or right.
 int moveX = 0, moveY = 0;
+
 boolean isShifting = false;
-Entity selected;
 
 void setup()
 {
   size(1300, 950, P3D);
-  //(height / 2) / tan(PI / 6)
   cameraZ = (height / 2) / tan(PI / 6);
   
+  //Creating the array of hexagons.
   for(int x = 1; x < 100; x++)
   {
     background.add(new ArrayList<Hexagon>());
@@ -29,29 +45,37 @@ void setup()
       {
         temp += 30;
       }
-
-      background.get(x - 1).add(new Hexagon(52 * x, temp, 35, 6, (int)(Math.random() * 30), (int)(Math.random() * 40 + 70), (int)(Math.random() * 30), x, y));
+      
+      //Creates a shape with this x value, y value, radius, number of sides, r, g, b, list x position, and list y position.
+      background.get(x - 1).add(new Hexagon(52 * x, temp, 35, 6, (int)(Math.random() * 30), (int)(Math.random() * 40 + 70), (int)(Math.random() * 30), x - 1, y - 1));
     }
   }
 
-  //Move values... 3=2, 4=3, 7=4, 11~=5
-  test = new Entity(0, 0, 20, 4, 255, 0, 0, 7);
-  mouseHex = nearestHex(mouseX, mouseY);
-  mouseHex.g += 150;
-  test.move(background.get(50).get(38));
+  //Creates two entities, each with their own color, movement range, and position in the list.
+  test1 = new Entity(0, 0, 20, 4, 255, 0, 0, 4);
+  test2 = new Entity(0, 0, 20, 4, 0, 0, 255, 6);
+  test1.move(background.get(50).get(38));
+  test2.move(background.get(49).get(38));
 }
 
 void draw()
 {
+  //Sets background color.
   background(20, 98, 224);
+  
+  //Moves the highlighted hexagon to the mouse.
+  moveCursor();
+  
+  //Sets basic left, right, down, up movement speed.
   float move = cameraZ / 90;
   
+  //Increases movement speed if the user is holding shift.
   if(isShifting)
   {
-    print("called");
     move = cameraZ / 40;
   }
  
+ //Moving the user's camera if they are hitting the proper key and are inside the x-y limits of the program.
   if(moveX > 0 && cameraX + move < 4500)
   {
     cameraX += move;
@@ -72,8 +96,11 @@ void draw()
     cameraY -= move;
     moveCursor();
   }
+  
+  //Sets the camera to the specified location.
   camera(cameraX, cameraY, cameraZ, cameraX, cameraY, 0, 0, 1, 0);
 
+  //Draws the hexagon background.
   pushMatrix();
   for(ArrayList<Hexagon> list : background)
   {
@@ -84,16 +111,26 @@ void draw()
   }
   popMatrix();
 
+  //Draws the entities onto the hexagons.
   pushMatrix();
-  test.display();
+  test1.display();
+  test2.display();
   popMatrix();
 }
 
+//Moves the hightlighted hexagon if the mouse is moved.
+void mouseMoved()
+{
+  moveCursor();
+}
+
+//Zooms the camera in or out if the user scrolls.
 void mouseWheel(MouseEvent event)
 {
   float e = event.getCount();
   float zoom = 0;
   
+  //Increases speed if the user is pressing shift.
   if(isShifting)
   {
     zoom = e * cameraZ / 10;
@@ -103,21 +140,58 @@ void mouseWheel(MouseEvent event)
     zoom = e * cameraZ / 20;
   }
   
+  //Limits how close or far the user can zoom.
   if(cameraZ + zoom < 4500 && cameraZ + zoom > 500)
   {
     cameraZ += zoom;
   }
 
+  //Updates mouse position.
   moveCursor();
 }
 
+//Hightlights the hexagon under the user's mouse.
 void moveCursor()
 {
-  mouseHex.g -= 145;
-  mouseHex = nearestHex((int) (cameraX + (mouseX - width / 2) * cameraZ / 822.76), (int) (cameraY + (mouseY - height / 2) * cameraZ / 822.76));
+  //Deselects previous hexagon if this is not the initialization of the program.
+  if(mouseHex != null)
+  {
+    mouseHex.g -= 145;
+  }
+  
+  List<Hexagon> choices = new ArrayList<Hexagon>();
+  
+  //Loops through a nine by nine square, not including hexes outside the board or the corners that should not be selected depending on if the column number is even or odd.
+  for(int x = -1; x < 2; x++)
+  {
+    for(int y = -1; y < 2; y++)
+    {
+      if(listX + x < background.size() && listX + x >= 0 && listY + y < background.get(listX + x).size() && listY + y >= 0)
+      {
+        if(listX + 1 % 2 == 0)
+        {
+          if(!(x == -1 && y == -1) && !(x == 1 && y == -1))
+          {
+            choices.add(background.get(listX + x).get(listY + y));
+          }
+        }
+        else
+        {
+          if(!(x == -1 && y == 1) && !(x == 1 && y == 1))
+          {
+            choices.add(background.get(listX + x).get(listY + y));
+          }
+        }
+      }
+    }
+  }
+  
+  //Moves the cursor to the nearest hexagon of the seven options. 822.76 is approximately equal to (the window height / 2) / tan(PI / 6) - the default camera Z position.
+  mouseHex = nearestHex(choices, (int) (cameraX + (mouseX - width / 2) * cameraZ / 822.76), (int) (cameraY + (mouseY - height / 2) * cameraZ / 822.76));
   mouseHex.g += 145;
 }
 
+//Activates if the user presses a certain key.
 void keyPressed()
 {
   //w
@@ -126,26 +200,27 @@ void keyPressed()
     moveY = -1;
   }
   //s
-  else if(key == 115)
+  if(key == 115)
   {
     moveY = 1;
   }
   //a
-  else if(key == 97)
+  if(key == 97)
   {
     moveX = -1;
   }
   //d
-  else if(key == 100)
+  if(key == 100)
   {
     moveX = 1;
   }
-  else if(key == CODED && keyCode == SHIFT)
+  if(key == CODED && keyCode == SHIFT)
   {
-    isShifting = true;
+    isShifting = !isShifting;
   }
 }
 
+//Activates if the user releases a key.
 void keyReleased()
 {
   //w
@@ -154,80 +229,23 @@ void keyReleased()
     moveY = 0;
   }
   //s
-  else if(key == 115)
+  if(key == 115)
   {
     moveY = 0;
   }
   //a
-  else if(key == 97)
+  if(key == 97)
   {
     moveX = 0;
   }
   //d
-  else if(key == 100)
+  if(key == 100)
   {
     moveX = 0;
   }
-  else if(key == CODED && keyCode == SHIFT)
-  {
-    isShifting = false;
-  }
 }
 
-void mouseMoved()
-{
-  /*
-  List<Hexagon> adjacent = new ArrayList<Hexagon>();
-  adjacent.add(mouseHex);
-
-  
-   *           ***
-  ***          ***
-  ***           *
-  odd          even
-  
-
-  for(int x = -1; x < 2; x++)
-  {
-    for(int y = -1; y < 2; y++)
-    {
-      if(listX + x >= 0 && listX + x < background.size() && listY + y >= 0 && listY + y < background.get(0).size())
-      {
-        adjacent.add(background.get(listX + x).get(listY + y));
-        background.get(listX + x).get(listY + y).r += 100;
-        delay(100);
-        background.get(listX + x).get(listY + y).r -= 100;
-      }
-    }
-  }
-
-  if(listX + 1 % 2 == 0)
-  {
-    if(listX + 1 < background.size() && listY + 1 < background.get(0).size())
-    {
-      adjacent.remove(background.get(listX + 1).get(listY + 1));
-    }
-    if(listX - 1 >= 0 && listY + 1 < background.get(0).size())
-    {
-      adjacent.remove(background.get(listX - 1).get(listY + 1));
-    }
-  }
-  else
-  {
-    if(listX + 1 < background.size() && listY - 1 >= 0)
-    {
-      adjacent.remove(background.get(listX + 1).get(listY - 1));
-    }
-    if(listX - 1 >= 0 && listY - 1 >= 0)
-    {
-      adjacent.remove(background.get(listX - 1).get(listY - 1));
-    }
-  }
-  */
-  //X constant is -650 and Y constant is -475 when cameraZ = (height / 2) / tan(PI / 6) (822.76).
-  moveCursor();
-}
-
+//Manipulates entities when the user clicks.
 void mouseClicked()
 {
   if(mouseButton == LEFT)
@@ -236,67 +254,55 @@ void mouseClicked()
     {
       selected = mouseHex.occupant;
   
+      //Selecting an entity from the board.
       if(selected != null)
       {
+        //Makes the entity slightly transparent.
         selected.r += 100;
         selected.g += 100;
         selected.b += 100;
-  
+        
+        //Updates the shading which shows where this entity can move.
+        calculateMovement();
         moveShade(145);
       }
     }
     else
     {
+      //Unselecting an entity if the user clicks on it again.
       if(selected == mouseHex.occupant)
       {
         selected.r -= 100;
         selected.g -= 100;
         selected.b -= 100;
+        
+        //Updates movement shading.
         moveShade(-145);
         selected = null;
       }
-      else if(distance(selected.x, selected.y, mouseHex.x, mouseHex.y) < 9010 * selected.moveRange)
+      //Moving the entity to an unoccupied hex inside it's move range.
+      else if(movable.contains(mouseHex) && mouseHex.occupant == null)
       {
         moveShade(-145);
         selected.position.occupant = null;
         selected.move(mouseHex);
+        calculateMovement();
         moveShade(145);
       }
     }
   }
-  else if(mouseButton == CENTER && selected != null)
+  //Moving an entity regardless of move range for special circumstances.
+  else if(mouseButton == CENTER && selected != null && mouseHex.occupant == null)
   {
      moveShade(-145);
      selected.position.occupant = null;
      selected.move(mouseHex);
+     calculateMovement();
      moveShade(145);
   }
 }
 
-public Hexagon nearestHex(int mX, int mY)
-{
-  int min = Integer.MAX_VALUE;
-  int currentDistance = 0;
-  Hexagon hex = background.get(0).get(0);
-
-  for(int x = 0; x < background.size(); x++)
-  {
-    for(int y = 0; y < background.get(0).size(); y++)
-    {
-      currentDistance = distance(mX, mY, background.get(x).get(y).x, background.get(x).get(y).y);
-      if(currentDistance < min)
-      {
-        min = currentDistance;
-        hex = background.get(x).get(y);
-        listX = x;
-        listY = y;
-      }
-    }
-  }
-
-  return hex;
-}
-
+//Loops through every provided hexagon option and returns the one the shortest distance away from the mouse.
 public Hexagon nearestHex(List<Hexagon> choices, int mX, int mY)
 {
   int min = Integer.MAX_VALUE;
@@ -309,8 +315,9 @@ public Hexagon nearestHex(List<Hexagon> choices, int mX, int mY)
     if(currentDistance < min)
     {
       min = currentDistance;
+      
+      //Updates closest hex and closest hex list position.
       hex = choices.get(i);
-
       listX = hex.listPositionX;
       listY = hex.listPositionY;
     }
@@ -319,21 +326,77 @@ public Hexagon nearestHex(List<Hexagon> choices, int mX, int mY)
   return hex;
 }
 
+//Returns the distance between two points, not including the square root to improve processing speed.
 public static int distance(int x1, int y1, int x2, int y2)
 {
   return (int) (Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
 }
 
-public void moveShade(int colorShift)
+//calculates which hexagons the currently selected entity can move to.
+public void calculateMovement()
 {
-  for(ArrayList<Hexagon> list : background)
+  //Clears previously movable hexagons.
+  movable.clear();
+ 
+  //Sets the y offset to 0 if the entity is in an even column, 1 if odd.
+  int yOffset = 0;
+  if((listX + 1) % 2 == 0)
   {
-    for(Hexagon h : list)
+    yOffset = 1;
+  }
+ 
+  //Loops from the entity's column to the column on the right edge of the movement range.
+  for(int x = 0; x <= selected.moveRange; x++)
+  {
+    if(listX + x < background.size() && listX + x >= 0)
     {
-      if(distance(selected.x, selected.y, h.x, h.y) < 9010 * selected.moveRange)
+      //Re-centering the y coordinate on each new even index row.
+      if((listX + x) % 2 == 0)
       {
-        h.g += colorShift;
+        yOffset += 1;
+      }
+      
+      //Loops through the correct number of hexagons for each column, adding them to the list of movable hexagons.
+      for(int y = yOffset + -selected.moveRange - 1; y <= selected.moveRange - x + yOffset - 1; y++)
+      {
+        if(listY + y < background.size() && listY + y >= 0)
+        {
+          movable.add(background.get(listX + x).get(listY + y));
+
+        }
       }
     }
+  }
+  
+  //Resetting the y offset.
+  yOffset = 0;
+    
+  //Loops through the left hand side of the movement range. Same process as above but with some of the signs inverted to account for the negative x values.
+  for(int x = -1; x >= -selected.moveRange; x--)
+  {
+    if(listX + x < background.size() && listX + x >= 0)
+    {
+      if((listX + x) % 2 == 0)
+      {
+        yOffset += 1;
+      }
+        
+      for(int y = yOffset + -selected.moveRange; y <= selected.moveRange + x + yOffset; y++)
+      {
+        if(listY + y < background.size() && listY + y >= 0)
+        {
+          movable.add(background.get(listX + x).get(listY + y));
+        }
+      }
+    }
+  }
+}
+
+//Displays the hexagons the selected entity can move to as more brightly green than the others.
+public void moveShade(int colorShift)
+{
+  for(Hexagon h : movable)
+  {
+    h.g += colorShift;
   }
 }
