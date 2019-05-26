@@ -43,7 +43,7 @@ boolean isShifting = false;
 void setup()
 {
   //---------------------------------
-  fullScreen();
+  size(1300, 950, P3D);
   frameRate(60);
   //rendering images, needs to be 1 more than boxes loop, factors in the menu itself
   
