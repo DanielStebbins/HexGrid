@@ -1,5 +1,3 @@
-
-
 public class Box
 {
   //encapsulated items
@@ -7,6 +5,7 @@ public class Box
   private int y = 0;
   private int h = 0;
   private int w = 0;
+  private int z = 0;
   private boolean isDragged = false;
   private color col = color(66, 134, 244);
   private PImage image;
@@ -18,24 +17,27 @@ public class Box
    this.y = 0;  
    this.w = 10;
    this.h = 10;
+   this.z = 0;
    this.image = null;
  }
   /*X,Y coords and height and witdth and string for file*/
- Box(int x, int y, int wid, int hei, PImage image)
+ Box(int x, int y, int wid, int hei, int z, PImage image)
  {
    this.x = x;
    this.y = y;  
    this.w = wid;
    this.h = hei;
+   this.z = z;
    this.image = image;
  }
  
-  Box(int x, int y, int wid, int hei)
+  Box(int x, int y, int wid, int hei, int z)
  {
    this.x = x;
    this.y = y;  
    this.w = wid;
    this.h = hei;
+   this.z = z;
  }
  
  //throws the image over the presized box
@@ -115,5 +117,15 @@ public class Box
  public PImage getImage()
  {
    return this.image;
+ }
+ 
+ public int getZ()
+ {
+   return this.z;
+ }
+ 
+  public void setZ(int z)
+ {
+   this.z = z;
  }
 }

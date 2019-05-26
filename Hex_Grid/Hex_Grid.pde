@@ -55,7 +55,7 @@ void setup()
   //this is going to be the "dropdown" selection
   for(int i = 0; i < boxes.length; i++)
   {
-   boxes[i] = new Box(0,i*100,100,100,images[i]);
+   boxes[i] = new Box(0,i*100,100,100, 1, images[i]);
   }
   state = 0;  
   //-------------------------------
@@ -553,7 +553,7 @@ void mouseReleased()
          boxes[i].setColor(0);
          /*X,Y coords and height and witdth and string for file*/
          //places the prototype images onto the board
-         shownItems.add(new Box(boxes[i].getX(), boxes[i].getY(), boxes[i].getWidth(), boxes[i].getHeight(), boxes[i].getImage()));
+         shownItems.add(new Box(boxes[i].getX(), boxes[i].getY(), boxes[i].getWidth(), boxes[i].getHeight(), boxes[i].getZ(), boxes[i].getImage()));
          boxes[i].setX(0);
          boxes[i].setY(i*boxes[i].getWidth());
          state = 0;
