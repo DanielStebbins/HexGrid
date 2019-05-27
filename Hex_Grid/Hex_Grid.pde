@@ -42,6 +42,7 @@ boolean isShifting = false;
 
 void setup()
 {
+  cameraZ = (height / 2) / tan(PI / 6);
   //---------------------------------
   size(1300, 950, P3D);
   frameRate(60);
@@ -55,12 +56,12 @@ void setup()
   //this is going to be the "dropdown" selection
   for(int i = 0; i < boxes.length; i++)
   {
-   boxes[i] = new Box(0,i*100,100,100, 1, images[i]);
+   boxes[i] = new Box((int) (cameraX - width / 2 * cameraZ / 822.76), i*100 + (int) (cameraY - height / 2 * cameraZ / 822.76), 100,100, 1, images[i]);
+   //boxes[i] = new Box(0, i*100, 100,100, 1, images[i]);
   }
   state = 0;  
   //-------------------------------
   //size(1300, 950, P3D);
-  cameraZ = (height / 2) / tan(PI / 6);
   
   //Creating the array of hexagons.
   for(int x = 1; x < 100; x++)
@@ -148,6 +149,12 @@ void draw()
   popMatrix();
   
   //------------------------------
+  
+  for(int i = 0; i < boxes.length; i++)
+  {
+   boxes[i].setX((int) (cameraX - width / 2 * cameraZ / 822.76));
+   boxes[i].setY((int) (i*100 + (cameraY - height / 2 * cameraZ / 822.76)));
+  }
   
   //ensures that all the placed items are set up
   for(Box b: shownItems)

@@ -7,7 +7,7 @@ public class Box
   private int w = 0;
   private int z = 0;
   private boolean isDragged = false;
-  private color col = color(66, 134, 244);
+  private color col = color(255, 0, 0);
   private PImage image;
   
   //overloaded constructors
