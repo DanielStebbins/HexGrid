@@ -5,12 +5,14 @@ public class Entity
   int y;
   int moveRange;
   PImage image;
+  int imageIndex;
   Hexagon position;
-  public Entity(Hexagon position, PImage image, int moveRange)
+  public Entity(Hexagon position, PImage image, int moveRange, int imageIndex)
   {
-    this.position = position;
+    move(position);
     this.image = image;
     this.moveRange = moveRange;
+    this.imageIndex = imageIndex;
   }
   
   //Sets a new position and current hexagon when the entity moves.
@@ -25,12 +27,18 @@ public class Entity
  public void setDrawings()
  {
    if(this.image == null)
-   {}
+   {
+   }
    else
    {
-     imageMode(CORNER);
+     imageMode(CENTER);
      image.resize(70, 70);
      image(this.image,this.x,this.y);
    }
+ }
+ 
+ public void setImage(PImage image)
+ {
+   this.image = image;
  }
 }

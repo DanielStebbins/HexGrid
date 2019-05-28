@@ -6,9 +6,11 @@ public class Box
   private int h = 0;
   private int w = 0;
   private int z = 0;
+  private int moveRange = 0;
   private boolean isDragged = false;
   private color col = color(255, 0, 0);
   private PImage image;
+  private int imageIndex;
   
   //overloaded constructors
  Box()
@@ -21,7 +23,7 @@ public class Box
    this.image = null;
  }
   /*X,Y coords and height and witdth and string for file*/
- Box(int x, int y, int wid, int hei, int z, PImage image)
+ Box(int x, int y, int wid, int hei, int z, PImage image, int moveRange, int imageIndex)
  {
    this.x = x;
    this.y = y;  
@@ -29,6 +31,8 @@ public class Box
    this.h = hei;
    this.z = z;
    this.image = image;
+   this.moveRange = moveRange;
+   this.imageIndex = imageIndex;
  }
  
   Box(int x, int y, int wid, int hei, int z)
@@ -144,4 +148,13 @@ public class Box
    this.image = image;
  }
  
+ public int getMoveRange()
+ {
+   return moveRange;
+ }
+ 
+ public int getImageIndex()
+ {
+   return imageIndex;
+ }
 }

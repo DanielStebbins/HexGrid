@@ -2,16 +2,17 @@
 Daniel Stebbins
 This is my own work, D.S.
 This project displays a grid made of hexagons and allows the user to move entities by clicking on them.
+Update after final project: It's epic, and I'm so sorry if you are trying to read this.
 */
 
 
 // Excess Troy Code----------------------
 int xOffset = 0;
 int yOffset = 0;
-PImage[] images = new PImage[5];
+PImage[] images = new PImage[6];
 color col = color(216);
  /*X,Y coords and height and witdth and string for file*/
-Box boxes[] = new Box[5];
+Box boxes[] = new Box[6];
 boolean dragging = false;
 int state;
 ArrayList<Box> shownItems = new ArrayList<Box>();
@@ -56,7 +57,7 @@ void setup()
   //this is going to be the "dropdown" selection
   for(int i = 0; i < boxes.length; i++)
   {
-   boxes[i] = new Box((int) (cameraX - width / 2 * cameraZ / 822.76), i*(int)(100 * cameraZ / 822.76) + (int) (cameraY - height / 2 * cameraZ / 822.76), (int)(100 * cameraZ / 822.76), (int)(100 * cameraZ / 822.76), 1, images[i]);
+   boxes[i] = new Box((int) (cameraX - width / 2 * cameraZ / 822.76), i*(int)(150 * cameraZ / 822.76) + (int) (cameraY - height / 2 * cameraZ / 822.76), (int)(150 * cameraZ / 822.76), (int)(150 * cameraZ / 822.76), 1, images[i], i + 1, i);
    //boxes[i] = new Box(0, i*100, 100,100, 1, images[i]);
   }
   state = 0;  
@@ -136,21 +137,25 @@ void draw()
   popMatrix();
 
   //Draws the entities onto the hexagons.
-  pushMatrix();
   for(Entity e: entities)
   {
+    e.setImage(images[e.imageIndex]);
     e.setDrawings();
   }
-  popMatrix();
   
   //------------------------------
+  
+  for(int i = 0; i < images.length; i++)
+  {
+   images[i] = loadImage("image" + i + ".png"); 
+  }
   
   for(int i = 0; i < boxes.length; i++)
   {
    boxes[i].setX((int) (cameraX - width / 2 * cameraZ / 822.76));
-   boxes[i].setY((int) (i*(int)(100 * cameraZ / 822.76) + (cameraY - height / 2 * cameraZ / 822.76)));
-   boxes[i].setWidth((int) (100 * cameraZ / 822.76));
-   boxes[i].setHeight((int) (100 * cameraZ / 822.76));
+   boxes[i].setY((int) (i*(int)(150 * cameraZ / 822.76) + (cameraY - height / 2 * cameraZ / 822.76)));
+   boxes[i].setWidth((int) (150 * cameraZ / 822.76));
+   boxes[i].setHeight((int) (150 * cameraZ / 822.76));
    boxes[i].setImage(images[i]);
   }
   
@@ -222,11 +227,6 @@ void mouseWheel(MouseEvent event)
 
   //Updates mouse position.
   moveCursor();
-  
-  for(int i = 0; i < images.length; i++)
-  {
-   images[i] = loadImage("image" + i + ".png"); 
-  }
 }
 
 //Hightlights the hexagon under the user's mouse.
@@ -546,7 +546,7 @@ void mouseReleased()
           }
         else
         {
-          entities.add(new Entity(mouseHex, shownItems.get(i).getImage(), 5));
+          entities.add(new Entity(mouseHex, shownItems.get(i).getImage(), shownItems.get(i).getMoveRange(), shownItems.get(i).getImageIndex()));
           shownItems.remove(i);
         }
       }
@@ -561,7 +561,7 @@ void mouseReleased()
          boxes[i].setColor(0);
          /*X,Y coords and height and witdth and string for file*/
          //places the prototype images onto the board
-         shownItems.add(new Box(boxes[i].getX(), boxes[i].getY(), boxes[i].getWidth(), boxes[i].getHeight(), boxes[i].getZ(), boxes[i].getImage()));
+         shownItems.add(new Box(boxes[i].getX(), boxes[i].getY(), boxes[i].getWidth(), boxes[i].getHeight(), boxes[i].getZ(), boxes[i].getImage(), boxes[i].getMoveRange(), i));
          boxes[i].setX(0);
          boxes[i].setY((int) (i*boxes[i].getWidth() * cameraZ / 822.76));
          state = 0;
