@@ -3,6 +3,9 @@ Daniel Stebbins
 This is my own work, D.S.
 This project displays a grid made of hexagons and allows the user to move entities by clicking on them.
 Update after final project: It's epic, and I'm so sorry if you are trying to read this.
+
+Troy Cope
+Made the dropdown menu for entity images and the drag and drop functionality.
 */
 
 
@@ -145,11 +148,13 @@ void draw()
   
   //------------------------------
   
+  //Keeping the images from getting blurry.
   for(int i = 0; i < images.length; i++)
   {
    images[i] = loadImage("image" + i + ".png"); 
   }
   
+  //Box ratios to keep a fixed size while zooming in and out.
   for(int i = 0; i < boxes.length; i++)
   {
    boxes[i].setX((int) (cameraX - width / 2 * cameraZ / 822.76));

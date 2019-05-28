@@ -24,6 +24,7 @@ public class Entity
      position = mouseHex;
   }
   
+  //displays the stored image
  public void setDrawings()
  {
    if(this.image == null)
@@ -37,6 +38,7 @@ public class Entity
    }
  }
  
+ //for refreshing the images to keep them from getting blurry.
  public void setImage(PImage image)
  {
    this.image = image;
