@@ -138,4 +138,10 @@ public class Box
  {
    this.z = z;
  }
+ 
+ public void setImage(PImage image)
+ {
+   this.image = image;
+ }
+ 
 }

@@ -1,11 +1,15 @@
 //Stores the movement range, color, and current hexagon occupied.
-public class Entity extends Polygon
+public class Entity
 {
+  int x;
+  int y;
   int moveRange;
+  PImage image;
   Hexagon position;
-  public Entity(int x, int y, int radius, int sides, int r, int g, int b, int moveRange)
+  public Entity(Hexagon position, PImage image, int moveRange)
   {
-    super(x, y, radius, sides, r, g, b);
+    this.position = position;
+    this.image = image;
     this.moveRange = moveRange;
   }
   
@@ -17,4 +21,16 @@ public class Entity extends Polygon
      mouseHex.occupant = this;
      position = mouseHex;
   }
+  
+ public void setDrawings()
+ {
+   if(this.image == null)
+   {}
+   else
+   {
+     imageMode(CORNER);
+     image.resize(this.w,this.h);
+     image(this.image,this.x,this.y);
+   }
+ }
 }

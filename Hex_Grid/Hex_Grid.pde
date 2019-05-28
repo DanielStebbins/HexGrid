@@ -25,7 +25,7 @@ List<ArrayList<Hexagon>> background = new ArrayList<ArrayList<Hexagon>>();
 
 //Stores the hexagons the selected entity can move to.
 List<Hexagon> movable = new ArrayList<Hexagon>();
-Entity test1, test2;
+List<Entity> entities = new ArrayList<Entity>();
 Entity selected;
 
 //Stores the hexagon the mouse is in and the list position of that hexagon.
@@ -56,7 +56,7 @@ void setup()
   //this is going to be the "dropdown" selection
   for(int i = 0; i < boxes.length; i++)
   {
-   boxes[i] = new Box((int) (cameraX - width / 2 * cameraZ / 822.76), i*100 + (int) (cameraY - height / 2 * cameraZ / 822.76), (int)(100 * cameraZ / 822.76), (int)(100 * cameraZ / 822.76), 1, images[i]);
+   boxes[i] = new Box((int) (cameraX - width / 2 * cameraZ / 822.76), i*(int)(100 * cameraZ / 822.76) + (int) (cameraY - height / 2 * cameraZ / 822.76), (int)(100 * cameraZ / 822.76), (int)(100 * cameraZ / 822.76), 1, images[i]);
    //boxes[i] = new Box(0, i*100, 100,100, 1, images[i]);
   }
   state = 0;  
@@ -81,12 +81,6 @@ void setup()
       background.get(x - 1).add(new Hexagon(52 * x, temp, 35, 6, (int)(Math.random() * 30), (int)(Math.random() * 40 + 70), (int)(Math.random() * 30), x - 1, y - 1));
     }
   }
-
-  //Creates two entities, each with their own color, movement range, and position in the list.
-  test1 = new Entity(0, 0, 20, 4, 255, 0, 0, 4);
-  test2 = new Entity(0, 0, 20, 4, 0, 0, 255, 6);
-  test1.move(background.get(50).get(38));
-  test2.move(background.get(49).get(38));
 }
 
 void draw()
@@ -143,8 +137,10 @@ void draw()
 
   //Draws the entities onto the hexagons.
   pushMatrix();
-  test1.display();
-  test2.display();
+  for(Entity e: entities)
+  {
+    e.setDrawings();
+  }
   popMatrix();
   
   //------------------------------
@@ -152,9 +148,10 @@ void draw()
   for(int i = 0; i < boxes.length; i++)
   {
    boxes[i].setX((int) (cameraX - width / 2 * cameraZ / 822.76));
-   boxes[i].setY((int) (i*100 + (cameraY - height / 2 * cameraZ / 822.76)));
+   boxes[i].setY((int) (i*(int)(100 * cameraZ / 822.76) + (cameraY - height / 2 * cameraZ / 822.76)));
    boxes[i].setWidth((int) (100 * cameraZ / 822.76));
    boxes[i].setHeight((int) (100 * cameraZ / 822.76));
+   boxes[i].setImage(images[i]);
   }
   
   //ensures that all the placed items are set up
@@ -166,7 +163,7 @@ void draw()
        b.setDrawings();
     }
   
-  //looks for displaying just the botton or everything
+  //looks for displaying just the button or everything
   switch(state)
   {
     case 0:
@@ -225,6 +222,11 @@ void mouseWheel(MouseEvent event)
 
   //Updates mouse position.
   moveCursor();
+  
+  for(int i = 0; i < images.length; i++)
+  {
+   images[i] = loadImage("image" + i + ".png"); 
+  }
 }
 
 //Hightlights the hexagon under the user's mouse.
@@ -334,10 +336,6 @@ void mouseClicked()
       //Selecting an entity from the board.
       if(selected != null)
       {
-        //Makes the entity slightly transparent.
-        selected.r += 100;
-        selected.g += 100;
-        selected.b += 100;
         
         //Updates the shading which shows where this entity can move.
         calculateMovement();
@@ -349,9 +347,6 @@ void mouseClicked()
       //Unselecting an entity if the user clicks on it again.
       if(selected == mouseHex.occupant)
       {
-        selected.r -= 100;
-        selected.g -= 100;
-        selected.b -= 100;
         
         //Updates movement shading.
         moveShade(-145);
@@ -502,8 +497,8 @@ void mousePressed()
             shownItems.get(i).setIsDragged(true);
             anotherDragged = true;
             shownItems.get(i).setColor(255);
-            xOffset = mouseX - shownItems.get(i).getX();
-            yOffset = mouseY - shownItems.get(i).getY();
+            xOffset = (int) (cameraX + (mouseX - width / 2) * cameraZ / 822.76) - shownItems.get(i).getX();
+            yOffset = (int) (cameraY + (mouseY - height / 2) * cameraZ / 822.76) - shownItems.get(i).getY();
           }
         } 
       }
@@ -523,8 +518,8 @@ void mousePressed()
          boxes[i].setIsDragged(true);
          anotherDragged = true;
          boxes[i].setColor(255);
-         xOffset = mouseX - boxes[i].getX();
-         yOffset = mouseY - boxes[i].getY();
+         xOffset = (int) (cameraX + (mouseX - width / 2) * cameraZ / 822.76) - boxes[i].getX();
+         yOffset = (int) (cameraY + (mouseY - height / 2) * cameraZ / 822.76) - boxes[i].getY();
        }
       }
       break; 
@@ -549,6 +544,10 @@ void mouseReleased()
             shownItems.remove(i);
             i--;
           }
+        else
+        {
+          
+        }
       }
       break;
     }
@@ -562,8 +561,8 @@ void mouseReleased()
          /*X,Y coords and height and witdth and string for file*/
          //places the prototype images onto the board
          shownItems.add(new Box(boxes[i].getX(), boxes[i].getY(), boxes[i].getWidth(), boxes[i].getHeight(), boxes[i].getZ(), boxes[i].getImage()));
-         boxes[i].setX((int) (cameraX - width / 2));
-         boxes[i].setY(i*boxes[i].getWidth());
+         boxes[i].setX(0);
+         boxes[i].setY((int) (i*boxes[i].getWidth() * cameraZ / 822.76));
          state = 0;
        }
        boxes[i].setIsDragged(false);
@@ -586,8 +585,8 @@ void mouseDragged()
       {
        if(shownItems.get(i).getIsDragged())
        {
-         shownItems.get(i).setX((int) (cameraX + (mouseX - width / 2) * cameraZ / 822.76)-xOffset);
-         shownItems.get(i).setY((int) (cameraY + (mouseY - height / 2) * cameraZ / 822.76)-yOffset);
+         shownItems.get(i).setX((int) (cameraX + (mouseX - width / 2) * cameraZ / 822.76) - xOffset);
+         shownItems.get(i).setY((int) (cameraY + (mouseY - height / 2) * cameraZ / 822.76) - yOffset);
        }
      }
       break;
@@ -599,8 +598,8 @@ void mouseDragged()
       {
        if(boxes[i].getIsDragged())
        {
-         boxes[i].setX((int) (cameraX + (mouseX - width / 2) * cameraZ / 822.76)-xOffset);
-         boxes[i].setY((int) (cameraY + (mouseY - height / 2) * cameraZ / 822.76)-yOffset);
+         boxes[i].setX((int) (cameraX + (mouseX - width / 2) * cameraZ / 822.76) - xOffset);
+         boxes[i].setY((int) (cameraY + (mouseY - height / 2) * cameraZ / 822.76) - yOffset);
        }
       }
       break;
