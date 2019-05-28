@@ -63,7 +63,7 @@ public class Box
  //to be done as a scan for the boxes, only dimensions needed
   public boolean isWithin()
   {
-    if(mouseX < this.w + this.x && mouseX > this.x && mouseY < this.h + this.y && mouseY > this.y)
+    if((int) (cameraX + (mouseX - width / 2) * cameraZ / 822.76) < this.w + this.x && (int) (cameraX + (mouseX - width / 2) * cameraZ / 822.76) > this.x && (int) (cameraY + (mouseY - height / 2) * cameraZ / 822.76) < this.h + this.y && (int) (cameraY + (mouseY - height / 2) * cameraZ / 822.76) > this.y)
       return true;
     return false;
   }  
@@ -104,10 +104,20 @@ public class Box
    this.isDragged = isDragged; 
  }
  
+ public void setWidth(int w)
+ {
+   this.w = w;
+ }
+ 
  public int getWidth()
 {
  return this.w; 
 }
+
+ public void setHeight(int h)
+ {
+   this.h = h;
+ }
  
  public int getHeight()
  {

@@ -56,7 +56,7 @@ void setup()
   //this is going to be the "dropdown" selection
   for(int i = 0; i < boxes.length; i++)
   {
-   boxes[i] = new Box((int) (cameraX - width / 2 * cameraZ / 822.76), i*100 + (int) (cameraY - height / 2 * cameraZ / 822.76), 100,100, 1, images[i]);
+   boxes[i] = new Box((int) (cameraX - width / 2 * cameraZ / 822.76), i*100 + (int) (cameraY - height / 2 * cameraZ / 822.76), (int)(100 * cameraZ / 822.76), (int)(100 * cameraZ / 822.76), 1, images[i]);
    //boxes[i] = new Box(0, i*100, 100,100, 1, images[i]);
   }
   state = 0;  
@@ -130,7 +130,6 @@ void draw()
   
   //Sets the camera to the specified location.
   camera(cameraX, cameraY, cameraZ, cameraX, cameraY, 0, 0, 1, 0);
-
   //Draws the hexagon background.
   pushMatrix();
   for(ArrayList<Hexagon> list : background)
@@ -154,6 +153,8 @@ void draw()
   {
    boxes[i].setX((int) (cameraX - width / 2 * cameraZ / 822.76));
    boxes[i].setY((int) (i*100 + (cameraY - height / 2 * cameraZ / 822.76)));
+   boxes[i].setWidth((int) (100 * cameraZ / 822.76));
+   boxes[i].setHeight((int) (100 * cameraZ / 822.76));
   }
   
   //ensures that all the placed items are set up
@@ -561,7 +562,7 @@ void mouseReleased()
          /*X,Y coords and height and witdth and string for file*/
          //places the prototype images onto the board
          shownItems.add(new Box(boxes[i].getX(), boxes[i].getY(), boxes[i].getWidth(), boxes[i].getHeight(), boxes[i].getZ(), boxes[i].getImage()));
-         boxes[i].setX(0);
+         boxes[i].setX((int) (cameraX - width / 2));
          boxes[i].setY(i*boxes[i].getWidth());
          state = 0;
        }
@@ -585,8 +586,8 @@ void mouseDragged()
       {
        if(shownItems.get(i).getIsDragged())
        {
-         shownItems.get(i).setX(mouseX-xOffset);
-         shownItems.get(i).setY(mouseY-yOffset);
+         shownItems.get(i).setX((int) (cameraX + (mouseX - width / 2) * cameraZ / 822.76)-xOffset);
+         shownItems.get(i).setY((int) (cameraY + (mouseY - height / 2) * cameraZ / 822.76)-yOffset);
        }
      }
       break;
@@ -598,8 +599,8 @@ void mouseDragged()
       {
        if(boxes[i].getIsDragged())
        {
-         boxes[i].setX(mouseX-xOffset);
-         boxes[i].setY(mouseY-yOffset);
+         boxes[i].setX((int) (cameraX + (mouseX - width / 2) * cameraZ / 822.76)-xOffset);
+         boxes[i].setY((int) (cameraY + (mouseY - height / 2) * cameraZ / 822.76)-yOffset);
        }
       }
       break;
