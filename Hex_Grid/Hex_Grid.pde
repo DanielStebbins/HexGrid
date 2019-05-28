@@ -546,7 +546,8 @@ void mouseReleased()
           }
         else
         {
-          
+          entities.add(new Entity(mouseHex, shownItems.get(i).getImage(), 5));
+          shownItems.remove(i);
         }
       }
       break;

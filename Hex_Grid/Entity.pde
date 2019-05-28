@@ -29,7 +29,7 @@ public class Entity
    else
    {
      imageMode(CORNER);
-     image.resize(this.w,this.h);
+     image.resize(70, 70);
      image(this.image,this.x,this.y);
    }
  }
